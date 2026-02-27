@@ -40,7 +40,12 @@ export async function getLeaderboard(limit = 20) {
                 .order('score', { ascending: false })
                 .limit(limit);
 
-            if (!error && data) return data;
+            if (!error && data) {
+                // Supabase is healthy — clear any stale localStorage so
+                // all devices show the same global leaderboard
+                localStorage.removeItem(LOCAL_KEY);
+                return data;
+            }
             console.warn('Supabase fetch error:', error);
         } catch (e) {
             console.warn('Supabase fetch failed, falling back to localStorage', e);

@@ -41,6 +41,7 @@ export async function getLeaderboard(limit = 20) {
                 .limit(limit);
 
             if (!error && data) return data;
+            console.warn('Supabase fetch error:', error);
         } catch (e) {
             console.warn('Supabase fetch failed, falling back to localStorage', e);
         }
@@ -53,26 +54,33 @@ export async function getLeaderboard(limit = 20) {
 }
 
 export async function addScore(username, score, difficulty) {
+    // Only send columns that exist — let DB handle id and created_at
     const entry = {
         username,
         score,
         difficulty,
-        created_at: new Date().toISOString(),
     };
 
     if (!useLocal && supabase) {
         try {
-            const { error } = await supabase.from('leaderboard').insert([entry]);
-            if (!error) return true;
-            console.warn('Supabase insert failed, saving locally', error);
+            const { data, error } = await supabase
+                .from('leaderboard')
+                .insert([entry])
+                .select();
+
+            if (!error) {
+                console.log('Score saved to Supabase:', data);
+                return true;
+            }
+            console.warn('Supabase insert failed:', error.message, error.details, error.hint);
         } catch (e) {
-            console.warn('Supabase insert error, saving locally', e);
+            console.warn('Supabase insert error:', e);
         }
     }
 
     // Fallback to localStorage
     const local = getLocal();
-    local.push(entry);
+    local.push({ ...entry, created_at: new Date().toISOString() });
     local.sort((a, b) => b.score - a.score);
     saveLocal(local.slice(0, 100));
     return true;
@@ -96,3 +104,4 @@ export async function getRank(score) {
     const local = getLocal();
     return local.filter((e) => e.score > score).length + 1;
 }
+

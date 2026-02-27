@@ -2,19 +2,20 @@
 
 import { DIFFICULTIES } from '../engine.js';
 
-export function renderResult(container, state, roundResult, onNext) {
-    const diff = DIFFICULTIES[roundResult.difficulty || state.difficulty];
-    const isLast = state.currentRound >= 4;
-    const failed = roundResult.result === 'failed';
+export function renderResult(container, state, roundResult, onNext, isFailed) {
+  const diff = DIFFICULTIES[roundResult.difficulty || state.difficulty];
+  const isLast = state.currentRound >= 4;
+  const failed = roundResult.result === 'failed';
 
-    const bonusHtml = roundResult.bonuses && roundResult.bonuses.length > 0
-        ? roundResult.bonuses.map(b => `<div class="bonus-pill">${b.label} <span>+${b.value}</span></div>`).join('')
-        : '<p class="no-bonus">No bonuses this round</p>';
+  const bonusHtml = roundResult.bonuses && roundResult.bonuses.length > 0
+    ? roundResult.bonuses.map(b => `<div class="bonus-pill">${b.label} <span>+${b.value}</span></div>`).join('')
+    : '<p class="no-bonus">No bonuses this round</p>';
 
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="screen result-screen fade-in">
       <div class="result-icon">${failed ? '💀' : '🎉'}</div>
       <h2 class="result-title">${failed ? 'Round Failed' : 'Round Complete!'}</h2>
+      ${failed ? '<p class="subtitle" style="color:var(--text-muted);margin-top:-8px">Game over — better luck next time!</p>' : ''}
 
       <div class="glass-card result-card">
         <div class="result-row">
@@ -50,27 +51,27 @@ export function renderResult(container, state, roundResult, onNext) {
       </div>
 
       <button id="next-btn" class="btn btn-primary btn-large pulse-glow">
-        ${isLast ? '🏁 See Final Results' : '➡️ Next Round'}
+        ${failed ? '🚩 See Final Score' : isLast ? '🏁 See Final Results' : '➡️ Next Round'}
       </button>
     </div>
   `;
 
-    // Animate score counting
-    const scoreEl = container.querySelector('#anim-score');
-    const targetScore = failed ? 0 : (roundResult.roundScore || 0);
-    animateCount(scoreEl, 0, targetScore, 1200);
+  // Animate score counting
+  const scoreEl = container.querySelector('#anim-score');
+  const targetScore = failed ? 0 : (roundResult.roundScore || 0);
+  animateCount(scoreEl, 0, targetScore, 1200);
 
-    container.querySelector('#next-btn').addEventListener('click', onNext);
+  container.querySelector('#next-btn').addEventListener('click', onNext);
 }
 
 function animateCount(el, from, to, duration) {
-    const start = performance.now();
-    function tick(now) {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = Math.round(from + (to - from) * eased);
-        el.textContent = current.toLocaleString();
-        if (progress < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(from + (to - from) * eased);
+    el.textContent = current.toLocaleString();
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }

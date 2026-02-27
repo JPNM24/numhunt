@@ -20,6 +20,7 @@ document.body.insertBefore(particleCanvas, app);
 initParticles(particleCanvas);
 
 function showLanding() {
+    state = null;
     app.innerHTML = '';
     renderLanding(app, (username) => {
         state = createGameState(username);
@@ -31,25 +32,31 @@ function showDifficulty() {
     renderDifficulty(app, state.username, (diffKey) => {
         startRound(state, diffKey);
         showGame();
-    });
+    }, () => showLanding()); // onBack → landing
 }
 
 function showGame() {
     renderGame(app, state, (roundResult) => {
         showResult(roundResult);
-    });
+    }, () => showDifficulty()); // onBack → difficulty (restarts round selection)
 }
 
 function showResult(roundResult) {
+    const failed = roundResult.result === 'failed';
+
     renderResult(app, state, roundResult, () => {
-        if (state.currentRound >= 4) {
+        if (failed) {
+            // FAIL = game over immediately, no more rounds
+            showGameOver();
+        } else if (state.currentRound >= 4) {
             showGameOver();
         } else {
+            // Auto-advance to next difficulty
             const nextDiff = state.roundOrder[state.currentRound];
             startRound(state, nextDiff);
             showGame();
         }
-    });
+    }, failed); // pass failed flag so button text changes
 }
 
 function showGameOver() {
@@ -73,4 +80,3 @@ function showLeaderboard() {
 
 // Start the app
 showLanding();
-

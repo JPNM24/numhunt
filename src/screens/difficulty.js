@@ -2,10 +2,10 @@
 
 import { DIFFICULTIES } from '../engine.js';
 
-export function renderDifficulty(container, username, onSelect) {
-    const cards = Object.entries(DIFFICULTIES)
-        .map(
-            ([key, d]) => `
+export function renderDifficulty(container, username, onSelect, onBack) {
+  const cards = Object.entries(DIFFICULTIES)
+    .map(
+      ([key, d]) => `
     <button class="diff-card glass-card" data-diff="${key}" style="--card-color: ${d.color}; --card-glow: ${d.glow}">
       <span class="diff-emoji">${d.emoji}</span>
       <h3 class="diff-name">${d.name}</h3>
@@ -16,14 +16,18 @@ export function renderDifficulty(container, username, onSelect) {
       </div>
     </button>
   `
-        )
-        .join('');
+    )
+    .join('');
 
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="screen difficulty-screen fade-in">
       <div class="screen-header">
-        <h2>Welcome, <span class="accent">${escapeHtml(username)}</span></h2>
-        <p class="subtitle">Choose your first challenge</p>
+        <button id="diff-back" class="btn btn-ghost">← Back</button>
+        <div>
+          <h2>Welcome, <span class="accent">${escapeHtml(username)}</span></h2>
+          <p class="subtitle">Choose your first challenge</p>
+        </div>
+        <div style="width:80px"></div>
       </div>
       <div class="diff-grid">
         ${cards}
@@ -32,13 +36,15 @@ export function renderDifficulty(container, username, onSelect) {
     </div>
   `;
 
-    container.querySelectorAll('.diff-card').forEach((card) => {
-        card.addEventListener('click', () => onSelect(card.dataset.diff));
-    });
+  container.querySelectorAll('.diff-card').forEach((card) => {
+    card.addEventListener('click', () => onSelect(card.dataset.diff));
+  });
+
+  container.querySelector('#diff-back').addEventListener('click', onBack);
 }
 
 function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }

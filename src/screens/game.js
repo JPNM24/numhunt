@@ -3,13 +3,14 @@
 import { DIFFICULTIES, makeGuess, isGameOver, getRoundFailed } from '../engine.js';
 import { playWin, playWrong } from '../sounds.js';
 
-export function renderGame(container, state, onRoundEnd) {
+export function renderGame(container, state, onRoundEnd, onBack) {
   const diff = DIFFICULTIES[state.difficulty];
   const roundNum = state.currentRound;
 
   container.innerHTML = `
     <div class="screen game-screen fade-in">
       <div class="game-header">
+        <button id="game-back" class="btn btn-ghost">← Quit</button>
         <div class="game-info-left">
           <span class="round-badge">Round ${roundNum}/4</span>
           <span class="diff-badge" style="--badge-color: ${diff.color}">${diff.emoji} ${diff.name}</span>
@@ -161,6 +162,12 @@ export function renderGame(container, state, onRoundEnd) {
   btn.addEventListener('click', handleGuess);
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !input.disabled) handleGuess();
+  });
+
+  container.querySelector('#game-back').addEventListener('click', () => {
+    roundActive = false;
+    clearInterval(timerInterval);
+    onBack();
   });
 
   setTimeout(() => input.focus(), 200);

@@ -56,6 +56,9 @@ body {
 #app {
   width: 100%;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* ===== Screens ===== */
@@ -67,6 +70,21 @@ body {
   min-height: 100vh;
   padding: 24px;
   position: relative;
+  pointer-events: none;
+  /* let particles receive events in the gaps */
+}
+
+/* Re-enable pointer events on all interactive elements across all screens */
+.screen .glass-card,
+.screen .btn,
+.screen input,
+.screen button,
+.screen .diff-card,
+.screen .guess-input-wrap,
+.screen .gameover-actions,
+.screen .lb-card,
+.screen .screen-header {
+  pointer-events: auto;
 }
 
 /* ===== Glass Cards ===== */
@@ -210,7 +228,7 @@ body {
   width: 100%;
   height: 100%;
   z-index: 0;
-  pointer-events: none;
+  cursor: none;
 }
 
 .landing-content {

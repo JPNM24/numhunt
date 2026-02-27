@@ -12,7 +12,12 @@ import './style.css';
 
 const app = document.getElementById('app');
 let state = null;
-let cleanupParticles = null;
+
+// --- Global persistent particle background ---
+const particleCanvas = document.createElement('canvas');
+particleCanvas.id = 'particle-canvas';
+document.body.insertBefore(particleCanvas, app);
+initParticles(particleCanvas);
 
 function showLanding() {
     app.innerHTML = '';
@@ -20,19 +25,9 @@ function showLanding() {
         state = createGameState(username);
         showDifficulty();
     });
-
-    // Start particles on landing
-    setTimeout(() => {
-        const canvas = document.getElementById('particle-canvas');
-        if (canvas) {
-            if (cleanupParticles) cleanupParticles();
-            cleanupParticles = initParticles(canvas);
-        }
-    }, 50);
 }
 
 function showDifficulty() {
-    if (cleanupParticles) { cleanupParticles(); cleanupParticles = null; }
     renderDifficulty(app, state.username, (diffKey) => {
         startRound(state, diffKey);
         showGame();
@@ -50,7 +45,6 @@ function showResult(roundResult) {
         if (state.currentRound >= 4) {
             showGameOver();
         } else {
-            // Auto-advance to next difficulty
             const nextDiff = state.roundOrder[state.currentRound];
             startRound(state, nextDiff);
             showGame();
@@ -79,3 +73,4 @@ function showLeaderboard() {
 
 // Start the app
 showLanding();
+

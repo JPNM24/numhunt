@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://xirhmfyaywcclhkaugxn.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_kGYdWBq-EKqO7XDVydJFRw_yA5v72M8';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpcmhtZnlheXdjY2xoa2F1Z3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDQ1MDUsImV4cCI6MjA4Nzc4MDUwNX0.u408v2shoxPAnHXgHBND4hTJP6GB5N030GlIaxSSBX0';
 const LOCAL_KEY = 'numhunt_leaderboard';
 
 let supabase = null;

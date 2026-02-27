@@ -3,9 +3,8 @@
 import { getLeaderboard } from '../leaderboard.js';
 
 export function renderLanding(container, onPlay) {
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="screen landing">
-      <canvas id="particle-canvas"></canvas>
       <div class="landing-content">
         <div class="logo-wrap">
           <h1 class="logo glitch" data-text="NumHunt">Num<span class="accent">Hunt</span></h1>
@@ -57,64 +56,64 @@ export function renderLanding(container, onPlay) {
     </div>
   `;
 
-    // Wire up
-    const input = container.querySelector('#username-input');
-    const btn = container.querySelector('#play-btn');
-    const htpBtn = container.querySelector('#how-to-play-btn');
-    const htpModal = container.querySelector('#htp-modal');
-    const htpClose = container.querySelector('#htp-close');
+  // Wire up
+  const input = container.querySelector('#username-input');
+  const btn = container.querySelector('#play-btn');
+  const htpBtn = container.querySelector('#how-to-play-btn');
+  const htpModal = container.querySelector('#htp-modal');
+  const htpClose = container.querySelector('#htp-close');
 
-    input.addEventListener('input', () => {
-        btn.disabled = input.value.trim().length < 2;
-    });
+  input.addEventListener('input', () => {
+    btn.disabled = input.value.trim().length < 2;
+  });
 
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !btn.disabled) onPlay(input.value.trim());
-    });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !btn.disabled) onPlay(input.value.trim());
+  });
 
-    btn.addEventListener('click', () => {
-        if (!btn.disabled) onPlay(input.value.trim());
-    });
+  btn.addEventListener('click', () => {
+    if (!btn.disabled) onPlay(input.value.trim());
+  });
 
-    htpBtn.addEventListener('click', () => htpModal.classList.remove('hidden'));
-    htpClose.addEventListener('click', () => htpModal.classList.add('hidden'));
-    htpModal.addEventListener('click', (e) => {
-        if (e.target === htpModal) htpModal.classList.add('hidden');
-    });
+  htpBtn.addEventListener('click', () => htpModal.classList.remove('hidden'));
+  htpClose.addEventListener('click', () => htpModal.classList.add('hidden'));
+  htpModal.addEventListener('click', (e) => {
+    if (e.target === htpModal) htpModal.classList.add('hidden');
+  });
 
-    // Load leaderboard preview
-    loadPreview(container);
+  // Load leaderboard preview
+  loadPreview(container);
 
-    // Focus input
-    setTimeout(() => input.focus(), 300);
+  // Focus input
+  setTimeout(() => input.focus(), 300);
 }
 
 async function loadPreview(container) {
-    const board = container.querySelector('#preview-board');
-    try {
-        const data = await getLeaderboard(5);
-        if (data.length === 0) {
-            board.innerHTML = '<p class="empty-text">No scores yet — be the first!</p>';
-            return;
-        }
-        board.innerHTML = data
-            .map(
-                (e, i) => `
+  const board = container.querySelector('#preview-board');
+  try {
+    const data = await getLeaderboard(5);
+    if (data.length === 0) {
+      board.innerHTML = '<p class="empty-text">No scores yet — be the first!</p>';
+      return;
+    }
+    board.innerHTML = data
+      .map(
+        (e, i) => `
       <div class="preview-row">
         <span class="rank">${['🥇', '🥈', '🥉'][i] || `#${i + 1}`}</span>
         <span class="name">${escapeHtml(e.username)}</span>
         <span class="score">${e.score.toLocaleString()}</span>
       </div>
     `
-            )
-            .join('');
-    } catch {
-        board.innerHTML = '<p class="empty-text">Leaderboard unavailable</p>';
-    }
+      )
+      .join('');
+  } catch {
+    board.innerHTML = '<p class="empty-text">Leaderboard unavailable</p>';
+  }
 }
 
 function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
